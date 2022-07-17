@@ -1,9 +1,17 @@
 {
   "name": "ncryptyr-client",
-  "description": "Ncryptyr Javascript client library",
-  "version": "0.0.0",
+  "description": "Ncryptyr JavaScript client library",
+  "version": "0.0.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
   "files": [
     "/dist"
   ],
