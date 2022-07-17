@@ -1,5 +1,6 @@
 import { URLSearchParams } from "url";
 import fetch from "node-fetch";
+import {StatusCode} from "./status-code";
 
 type Headers = Record<string, string>;
 type Parameters = Record<string, string>;
@@ -59,8 +60,10 @@ export class HttpRequest {
     return this;
   }
 
-  authRequired(): HttpRequest {
-    this.headers = {...this.client.commonHeaders, ...this.client.authHeaders};
+  authRequired(authRequired?: boolean): HttpRequest {
+    if (authRequired === undefined || authRequired) {
+      this.headers = {...this.client.commonHeaders, ...this.client.authHeaders};
+    }
     return this;
   }
 
@@ -84,8 +87,10 @@ export class HttpGetRequest {
     this.parameters = {};
   }
 
-  parameter(name: string, value: string): HttpGetRequest {
-    this.parameters[name] = value;
+  parameter(name: string | undefined, value: string | undefined): HttpGetRequest {
+    if (value !== undefined && name !== undefined) {
+      this.parameters[name] = value;
+    }
     return this;
   }
 
@@ -130,11 +135,14 @@ export class HttpPostRequest {
     return this;
   }
 
-  json(body: string | object): HttpPostRequest {
+  json(body: string | object, contentType?: string): HttpPostRequest {
     if (this.parameters !== undefined) {
       throw new Error('Parameters already set');
     }
     this.body = body;
+    if (contentType !== undefined) {
+      this.headers["Content-Type"] = contentType
+    }
     if (!("Content-Type" in this.headers)) {
       this.headers["Content-Type"] = "application/json";
     }
@@ -158,7 +166,7 @@ export class HttpPostRequest {
     }
     const res = await fetch(url, {
       method: "POST",
-      headers: this.request.headers,
+      headers: this.headers,
       body
     });
     return new HttpResponse(res);
@@ -174,7 +182,13 @@ export class HttpResponse {
   }
 
   success(): boolean {
-    return this.response.status === 200 || this.response.status === 201 || this.response.status === 204;
+    return this.response.status === StatusCode.OK
+      || this.response.status === StatusCode.CREATED
+      || this.response.status === StatusCode.NO_CONTENT;
+  }
+
+  contentType(): string {
+    return this.response.headers.get("content-type");
   }
 
   status(): number {
@@ -185,11 +199,11 @@ export class HttpResponse {
     return this.response.statusText;
   }
 
-  async json() {
+  async json(): Promise<any> {
     return await this.response.json();
   }
 
-  async text() {
+  async text(): Promise<string> {
     return await this.response.text();
   }
 }
