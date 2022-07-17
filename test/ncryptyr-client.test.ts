@@ -36,7 +36,6 @@ test("Happy Path", async () => {
     expect(listAccounts.accounts).toContainEqual(describeAccount);
 
     let updateAccount = await client.updateAccount({
-      id: account.id,
       contact: {
         name: "Quality Assurance Updated"
       }
@@ -44,7 +43,6 @@ test("Happy Path", async () => {
     expect(updateAccount.contact.name).toEqual("Quality Assurance Updated");
 
     updateAccount = await client.updateAccount({
-      id: account.id,
       contact: {
         name: "Quality Assurance",
         email: "qa@ncryptyr.com"

@@ -66,7 +66,7 @@ export interface ListAccountsCommandOutput {
 }
 
 export interface UpdateAccountCommand {
-  readonly id: string;
+  readonly id?: string;
   readonly contact?: {
     readonly name?: string;
     readonly email?: string;
