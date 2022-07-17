@@ -1,6 +1,8 @@
 import {HttpClient, HttpResponse, StatusCode} from "./http-client";
 import {BadRequestError, ForbiddenError, InternalServerError, NotFoundError} from "./errors";
 import * as fs from "fs";
+import path = require("path");
+import os = require("os");
 import {
   Account,
   ApiKey, ApiKeyWithSecret,
@@ -38,7 +40,27 @@ export class NcryptyrClient {
   protected client: HttpClient;
 
   protected readConfigFile(): NcryptyrClientConfig {
-    return fs.existsSync(CONFIG_FILE_NAME) ? JSON.parse(fs.readFileSync(CONFIG_FILE_NAME, UTF8)) : {};
+    let file = undefined;
+    // Find config file in current and parent directories
+    let currentPath = __dirname
+    for (let p of path.join(__dirname).normalize().split(path.sep)) {
+      currentPath = path.join(currentPath, "..").normalize();
+      if (fs.existsSync(path.join(currentPath, CONFIG_FILE_NAME))) {
+        file = path.join(currentPath, CONFIG_FILE_NAME);
+      }
+    }
+
+    // Find config file in home directory
+    if (file === undefined && fs.existsSync(path.join(os.homedir(), CONFIG_FILE_NAME))) {
+      file = path.join(os.homedir(), CONFIG_FILE_NAME);
+    }
+
+    // Find config file in /etc
+    if (file == undefined && fs.existsSync(path.join("/etc", CONFIG_FILE_NAME))) {
+      file = path.join("/etc", CONFIG_FILE_NAME);
+    }
+
+    return file !== undefined ? JSON.parse(fs.readFileSync(file, UTF8)) : {};
   }
 
   constructor(baseUrl?: string) {
