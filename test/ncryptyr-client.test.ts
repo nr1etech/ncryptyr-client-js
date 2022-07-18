@@ -108,6 +108,10 @@ test("Happy Path", async () => {
     expect(encryptionKeys.length).toEqual(1);
     expect(encryptionKeys).toContainEqual(encryptionKey1);
 
+    let ciphertext = await client.encrypt("TestKey1", "some awesome text");
+    let text = await client.decrypt(ciphertext);
+    expect(text).toEqual("some awesome text");
+
   } finally {
     await client.deleteAccount({id: account.id});
   }

@@ -62,8 +62,17 @@ export class HttpRequest {
 
   authRequired(authRequired?: boolean): HttpRequest {
     if (authRequired === undefined || authRequired) {
-      this.headers = {...this.client.commonHeaders, ...this.client.authHeaders};
+      this.headers = {
+        ...this.headers,
+        ...this.client.authHeaders
+      }
+      // this.headers = {...this.client.commonHeaders, ...this.client.authHeaders};
     }
+    return this;
+  }
+
+  header(name: string, value: string): HttpRequest {
+    this.headers[name] = value;
     return this;
   }
 
@@ -140,12 +149,13 @@ export class HttpPostRequest {
       throw new Error('Parameters already set');
     }
     this.body = body;
-    if (contentType !== undefined) {
-      this.headers["Content-Type"] = contentType
-    }
-    if (!("Content-Type" in this.headers)) {
-      this.headers["Content-Type"] = "application/json";
-    }
+    this.headers["Content-Type"] = contentType ?? "application/json";
+    return this;
+  }
+
+  text(body: string, contentType?: string): HttpPostRequest {
+    this.body = body;
+    this.headers["Content-Type"] = contentType ?? "text/plain";
     return this;
   }
 

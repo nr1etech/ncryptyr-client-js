@@ -174,4 +174,23 @@ export class NcryptyrClient {
   async deleteEncryptionKey(command: DeleteEncryptionKeyCommand): Promise<void> {
     return await this.sendCommand(command, true, ContentType.DELETE_ENCRYPTION_KEY_V1);
   }
+
+  async encrypt(encryptionKeyId: string, data: string): Promise<string> {
+    const res = await this.client.userAgent(USER_AGENT).request("/encrypt")
+      .header("Encryption-Key", encryptionKeyId)
+      .authRequired().post().text(data).send();
+    if (res.success()) {
+      return await res.text();
+    }
+    await this.processFailure(res);
+  }
+
+  async decrypt(ciphertext: string): Promise<string> {
+    const res = await this.client.userAgent(USER_AGENT).request("/decrypt")
+      .authRequired().post().text(ciphertext).send();
+    if (res.success()) {
+      return await res.text();
+    }
+    await this.processFailure(res);
+  }
 }
