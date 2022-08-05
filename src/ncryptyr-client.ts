@@ -24,7 +24,7 @@ import {
 } from "./types";
 import {ContentType} from "./content-type";
 
-const DEFAULT_BASE_URL = "https://api.ncryptyr.conm";
+const DEFAULT_BASE_URL = "https://api.ncryptyr.com";
 const USER_AGENT = "ncryptyr-client";
 const CONFIG_FILE_NAME = "ncryptyr.json";
 const UTF8 = "utf-8";
