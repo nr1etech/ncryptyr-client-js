@@ -1,8 +1,5 @@
 import {HttpClient, HttpResponse, StatusCode} from "./http-client";
 import {BadRequestError, ForbiddenError, InternalServerError, NotFoundError} from "./errors";
-import * as fs from "fs";
-import path = require("path");
-import os = require("os");
 import {
   Account,
   ApiKey, ApiKeyWithSecret,
@@ -26,62 +23,15 @@ import {ContentType} from "./content-type";
 
 const DEFAULT_BASE_URL = "https://api.ncryptyr.com";
 const USER_AGENT = "ncryptyr-client";
-const CONFIG_FILE_NAME = "ncryptyr.json";
-const UTF8 = "utf-8";
-
-export class NcryptyrClientConfig {
-  readonly baseUrl?: string;
-  readonly apiKey?: string;
-}
 
 export class NcryptyrClient {
 
   readonly baseUrl: string;
   protected client: HttpClient;
 
-  protected readConfigFile(): NcryptyrClientConfig {
-    let file = undefined;
-    // Find config file in current and parent directories
-    let currentPath = __dirname
-    for (let p of path.join(__dirname).normalize().split(path.sep)) {
-      currentPath = path.join(currentPath, "..").normalize();
-      if (fs.existsSync(path.join(currentPath, CONFIG_FILE_NAME))) {
-        file = path.join(currentPath, CONFIG_FILE_NAME);
-      }
-    }
-
-    // Find config file in home directory
-    if (file === undefined && fs.existsSync(path.join(os.homedir(), CONFIG_FILE_NAME))) {
-      file = path.join(os.homedir(), CONFIG_FILE_NAME);
-    }
-
-    // Find config file in /etc
-    if (file == undefined && fs.existsSync(path.join("/etc", CONFIG_FILE_NAME))) {
-      file = path.join("/etc", CONFIG_FILE_NAME);
-    }
-
-    return file !== undefined ? JSON.parse(fs.readFileSync(file, UTF8)) : {};
-  }
-
-  constructor(baseUrl?: string) {
-    const configFile = this.readConfigFile();
-
-    if (baseUrl !== undefined) {
-      this.client = new HttpClient(baseUrl);
-    } else if (process.env.NCRYPTYR_BASE_URL !== undefined) {
-      this.client = new HttpClient(process.env.NCRYPTYR_BASE_URL);
-    } else if (configFile.baseUrl !== undefined) {
-      this.client = new HttpClient(configFile.baseUrl);
-    } else {
-      this.client = new HttpClient(DEFAULT_BASE_URL);
-    }
-    this.baseUrl = this.client.baseUrl;
-
-    if (process.env.NCRYPTYR_API_KEY !== undefined) {
-      this.client.apiKey(process.env.NCRYPTYR_API_KEY);
-    } else if (configFile.apiKey !== undefined) {
-      this.client.apiKey(configFile.apiKey);
-    }
+  constructor(apiKey: string, baseUrl?: string) {
+    this.baseUrl = baseUrl ?? DEFAULT_BASE_URL
+    this.client = new HttpClient(this.baseUrl).apiKey(apiKey);
   }
 
   apiKey(secret: string): NcryptyrClient {

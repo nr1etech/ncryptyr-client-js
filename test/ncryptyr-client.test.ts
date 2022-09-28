@@ -4,17 +4,8 @@
  * @group integration/ncryptyr-client
  */
 import {TestHelper} from "./test-helper";
-import * as fs from "fs";
-import {NcryptyrClient, NcryptyrClientConfig} from "../src";
 import {ApiKey, EncryptionKeyType} from "../dist";
 
-test("Validate Config File", () => {
-  if (fs.existsSync("ncryptyr.json") && process.env.NCRYPTYR_BASE_URL === undefined) {
-    const config = JSON.parse(fs.readFileSync("ncryptyr.json", "utf-8")) as NcryptyrClientConfig;
-    const client = new NcryptyrClient();
-    expect(client.baseUrl).toEqual(config.baseUrl);
-  }
-});
 
 jest.setTimeout(10000);
 
