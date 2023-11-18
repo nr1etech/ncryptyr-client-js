@@ -60,7 +60,7 @@ jobs:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ matrix.node-version }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.node-version }}pnpm-store-
+            ${{ runner.os }}-${{ matrix.node-version }}-pnpm-store-
       - name: Install dependencies
         run: pnpm i --frozen-lockfile --prefer-offline
       - name: Increment alpha version
