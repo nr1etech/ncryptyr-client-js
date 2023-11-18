@@ -1,9 +1,10 @@
 {
-  "name": "ncryptyr-client",
-  "description": "Ncryptyr JavaScript client library",
+  "name": "@ncryptyr/client",
+  "description": "Client for the Ncryptyr API",
   "version": "0.0.8",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "author": "NR1E, Inc",
   "publishConfig": {
     "access": "public"
   },
