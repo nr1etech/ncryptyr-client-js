@@ -26,7 +26,7 @@
           run: pnpm i --frozen-lockfile --prefer-offline
         - name: Increment alpha version
           if: matrix.node-version == 20 && github.ref == 'refs/heads/develop'
-          run: echo VERSION="$(pnpm version prepatch --preid alpha --no-git-tag-version)" >> $GITHUB_ENV
+          run: echo VERSION="$(pnpm version prerelease --preid alpha --no-git-tag-version)" >> $GITHUB_ENV
         - name: Increment patch version
           if: matrix.node-version == 20 && github.ref == 'refs/heads/main'
           run: echo VERSION="$(pnpm version patch --no-git-tag-version)" >> $GITHUB_ENV
