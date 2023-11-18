@@ -1,53 +1,14 @@
   on:
-    workflow_dispatch:
     push:
       branches:
         - main
         - develop
   jobs:
-    build:
-      runs-on: ubuntu-latest
-      strategy:
-        matrix:
-          node-version: [18, 20]
-      steps:
-        - uses: actions/checkout@v4
-          with:
-            ssh-key: ${{ secrets.DEPLOY_KEY }}
-        - uses: pnpm/action-setup@v2
-          with:
-            version: 8
-        - name: Use Node.js ${{ matrix.node-version }}
-          uses: actions/setup-node@v4
-          with:
-            node-version: ${{ matrix.node-version }}
-            cache: 'pnpm'
-        - name: Install Dependencies
-          run: pnpm i --frozen-lockfile --prefer-offline
-        - name: Increment alpha version
-          if: matrix.node-version == 20 && github.ref == 'refs/heads/develop'
-          run: echo VERSION="$(pnpm version prerelease --preid alpha --no-git-tag-version)" >> $GITHUB_ENV
-        - name: Increment patch version
-          if: matrix.node-version == 20 && github.ref == 'refs/heads/main'
-          run: echo VERSION="$(pnpm version patch --no-git-tag-version)" >> $GITHUB_ENV
-        - name: Build
-          run: pnpm build
-        - name: Test
-          run: pnpm test
-        - name: Commit
-          if: matrix.node-version == 20
-          run: |
-            git config user.email "365211+erikrj@users.noreply.github.com"
-            git config user.name "Erik Jensen"
-            git commit -a -m "$VERSION\n[skip ci]"
-            git push
-        - name: Tag Release
-          if: matrix.node-version == 20 && github.ref == 'refs/heads/main'
-          run: |
-            git tag -a "$VERSION" -m "$VERSION"
-            git push origin "$VERSION"
-        - name: Publish
-          if: matrix.node-version == 20
-          run: |
-            npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_AUTH_TOKEN }}"
-            pnpm publish --publish-branch ${GITHUB_REF#refs/heads/}
+    on-push:
+      uses: ./.github/workflows/javascript-library.yml
+      with:
+        github-email: "365211+erikrj@users.noreply.github.com"
+        github-name: "Erik Jensen"
+      secrets:
+        deploy-key: ${{ secrets.DEPLOY_KEY }}
+        npm-auth-token: ${{ secrets.NPM_AUTH_TOKEN }}

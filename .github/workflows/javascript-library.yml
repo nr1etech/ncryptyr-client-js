@@ -1,0 +1,90 @@
+on:
+  workflow_call:
+    inputs:
+      node-versions:
+        description: "Node versions to use"
+        required: false
+        default: "[18,20]"
+        type: string
+      publish-node-version:
+        description: "Node version to use for publish"
+        required: false
+        default: "20"
+        type: number
+      pnpm-version:
+        description: "PNPM version to use"
+        required: false
+        default: "8"
+        type: string
+      github-email:
+        description: "GitHub email for pushing"
+        type: string
+        required: true
+      github-name:
+        description: "GitHub name for pushing"
+        type: string
+        required: true
+    secrets:
+      deploy-key:
+        description: "SSH private key for versioning"
+        required: true
+      npm-auth-token:
+        description: "NPM auth token for publishing"
+        required: true
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ${{ fromJson(inputs.node-versions) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.deploy-key }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - uses: pnpm/action-setup@v2
+        with:
+          version: ${{ inputs.pnpm-version }}
+          run_install: false
+      - name: Get pnpm store directory
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-${{ matrix.node-version }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.node-version }}pnpm-store-
+      - name: Install Dependencies
+        run: pnpm i --frozen-lockfile --prefer-offline
+      - name: Increment alpha version
+        if: matrix.node-version == inputs.publish-node-version && github.ref == 'refs/heads/develop'
+        run: echo VERSION="$(pnpm version prerelease --preid alpha --no-git-tag-version)" >> $GITHUB_ENV
+      - name: Increment patch version
+        if: matrix.node-version == inputs.publish-node-version && github.ref == 'refs/heads/main'
+        run: echo VERSION="$(pnpm version patch --no-git-tag-version)" >> $GITHUB_ENV
+      - name: Build
+        run: pnpm build
+      - name: Test
+        run: pnpm test
+      - name: Commit
+        if: matrix.node-version == inputs.publish-node-version
+        run: |
+          git config user.email "${{ inputs.github-email }}"
+          git config user.name "${{ inputs.github-username }}"
+          git commit -a -m "$VERSION\nGitHub Run Number ${{ github.run_number }}\n[skip ci]"
+          git push
+      - name: Tag Release
+        if: matrix.node-version == inputs.publish-node-version && github.ref == 'refs/heads/main'
+        run: |
+          git tag -a "$VERSION" -m "$VERSION"
+          git push origin "$VERSION"
+      - name: Publish
+        if: matrix.node-version == inputs.publish-node-version
+        run: |
+          npm config set "$(npm config get registry):_authToken" "${{ secrets.npm-auth-token }}"
+          pnpm publish --publish-branch ${GITHUB_REF#refs/heads/}
