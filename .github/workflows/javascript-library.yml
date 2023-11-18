@@ -81,9 +81,9 @@ jobs:
       - name: Commit and push version bump
         if: matrix.node-version == inputs.publish-node-version
         run: |
-          git commit -a -m "$VERSION\nGitHub Run Number ${{ github.run_number }}\n[skip ci]"
+          git commit -a -m "$VERSION" -m "GitHub Run Number ${{ github.run_number }}" -m "[skip ci]"
           git push
-      - name: Tag version bump
+      - name: Create tag ${{ env.VERSION }}
         if: matrix.node-version == inputs.publish-node-version && github.ref == 'refs/heads/main'
         run: |
           git tag -a "$VERSION" -m "$VERSION"
