@@ -71,11 +71,14 @@ jobs:
         run: pnpm build
       - name: Test
         run: pnpm test
-      - name: Commit
+      - name: Git Config
         if: matrix.node-version == inputs.publish-node-version
         run: |
           git config user.email "${{ inputs.github-email }}"
           git config user.name "${{ inputs.github-name }}"
+      - name: Commit Version Bump
+        if: matrix.node-version == inputs.publish-node-version
+        run: |
           git commit -a -m "$VERSION\nGitHub Run Number ${{ github.run_number }}\n[skip ci]"
           git push
       - name: Tag Release
@@ -86,5 +89,5 @@ jobs:
       - name: Publish
         if: matrix.node-version == inputs.publish-node-version
         run: |
-          npm config set "$(npm config get registry):_authToken" "${{ secrets.npm-auth-token }}"
+          pnpm config set "$(npm config get registry | sed -e 's/https://g'):_authToken" "${{ secrets.npm-auth-token }}"
           pnpm publish --publish-branch ${GITHUB_REF#refs/heads/}
