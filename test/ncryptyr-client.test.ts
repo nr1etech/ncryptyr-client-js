@@ -47,7 +47,7 @@ test('Happy Path', async () => {
     });
     expect(updateAccount).toEqual(account);
 
-    let apiKeyWithSecret = await client.createApiKey({
+    const apiKeyWithSecret = await client.createApiKey({
       id: 'TestKey',
     });
     expect(apiKeyWithSecret.id).toEqual('TestKey');
@@ -55,7 +55,7 @@ test('Happy Path', async () => {
     expect(apiKeyWithSecret.createdDate).toBeDefined();
     expect(apiKeyWithSecret.secret).toBeDefined();
 
-    let apiKey: ApiKey = {
+    const apiKey: ApiKey = {
       id: apiKeyWithSecret.id,
       accountId: apiKeyWithSecret.accountId,
       createdDate: apiKeyWithSecret.createdDate,
@@ -73,18 +73,18 @@ test('Happy Path', async () => {
     listApiKeys = await client.listApiKeys();
     expect(listApiKeys.length).toEqual(1);
 
-    let encryptionKey1 = await client.createEncryptionKey({id: 'TestKey1'});
+    const encryptionKey1 = await client.createEncryptionKey({id: 'TestKey1'});
     expect(encryptionKey1.id).toEqual('TestKey1');
     expect(encryptionKey1.accountId).toEqual(account.id);
     expect(encryptionKey1.createdDate).toBeDefined();
     expect(encryptionKey1.type).toEqual(EncryptionKeyType.AES_128);
 
-    let describeEncryptionKey = await client.describeEncryptionKey({
+    const describeEncryptionKey = await client.describeEncryptionKey({
       id: 'TestKey1',
     });
     expect(describeEncryptionKey).toEqual(encryptionKey1);
 
-    let encryptionKey2 = await client.createEncryptionKey({id: 'TestKey2'});
+    const encryptionKey2 = await client.createEncryptionKey({id: 'TestKey2'});
     expect(encryptionKey2.id).toEqual('TestKey2');
     expect(encryptionKey2.accountId).toEqual(account.id);
     expect(encryptionKey2.createdDate).toBeDefined();
@@ -100,8 +100,8 @@ test('Happy Path', async () => {
     expect(encryptionKeys.length).toEqual(1);
     expect(encryptionKeys).toContainEqual(encryptionKey1);
 
-    let ciphertext = await client.encrypt('TestKey1', 'some awesome text');
-    let text = await client.decrypt(ciphertext);
+    const ciphertext = await client.encrypt('TestKey1', 'some awesome text');
+    const text = await client.decrypt(ciphertext);
     expect(text).toEqual('some awesome text');
   } finally {
     await client.deleteAccount({id: account.id});

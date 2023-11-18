@@ -210,8 +210,8 @@ export class HttpResponse {
     return this.response.statusText;
   }
 
-  async json(): Promise<any> {
-    return await this.response.json();
+  async json<O>(): Promise<O> {
+    return (await this.response.json()) as O;
   }
 
   async text(): Promise<string> {

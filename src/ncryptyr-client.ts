@@ -53,9 +53,9 @@ export class NcryptyrClient {
   protected async processFailure(res: HttpResponse): Promise<Error> {
     let message = res.statusText();
     try {
-      const content = await res.json();
+      const content = await res.json<Object>();
       if ('message' in content) {
-        message = content.message;
+        message = content.message as string;
       }
     } catch (error) {
       // Ignore
@@ -75,12 +75,22 @@ export class NcryptyrClient {
     return Error(message);
   }
 
-  protected async sendCommand(
-    command: any,
+  protected async withOutput<O extends Object>(
+    output: Promise<O | null>
+  ): Promise<O> {
+    const result = await output;
+    if (result === null) {
+      throw new Error('Expected output');
+    }
+    return result;
+  }
+
+  protected async sendCommand<C extends Object, O extends Object>(
+    command: C,
     authRequired: boolean,
     contentType: ContentType,
     expectedContentType?: ContentType
-  ): Promise<any> {
+  ): Promise<O | null> {
     const res = await this.client
       .userAgent(USER_AGENT)
       .request('/')
@@ -97,129 +107,149 @@ export class NcryptyrClient {
           `Expected content type ${expectedContentType} and received ${res.contentType()}`
         );
       }
-      return res.status() === StatusCode.NO_CONTENT
-        ? undefined
-        : await res.json();
+      if (res.status() === StatusCode.NO_CONTENT) {
+        return null;
+      }
+      return await res.json();
     }
     throw await this.processFailure(res);
   }
 
   async enroll(command: EnrollCommand): Promise<EnrollCommandOutput> {
-    return await this.sendCommand(
-      command,
-      false,
-      ContentType.ENROLL_V1,
-      ContentType.ENROLL_V1_RESPONSE
+    return await this.withOutput(
+      this.sendCommand<EnrollCommand, EnrollCommandOutput>(
+        command,
+        false,
+        ContentType.ENROLL_V1,
+        ContentType.ENROLL_V1_RESPONSE
+      )
     );
   }
 
   async describeAccount(command?: DescribeAccountCommand): Promise<Account> {
-    return await this.sendCommand(
-      command ?? {},
-      true,
-      ContentType.DESCRIBE_ACCOUNT_V1,
-      ContentType.DESCRIBE_ACCOUNT_V1_RESPONSE
+    return await this.withOutput(
+      this.sendCommand(
+        command ?? {},
+        true,
+        ContentType.DESCRIBE_ACCOUNT_V1,
+        ContentType.DESCRIBE_ACCOUNT_V1_RESPONSE
+      )
     );
   }
 
   async listAccounts(
     command?: ListAccountsCommand
   ): Promise<ListAccountsCommandOutput> {
-    return await this.sendCommand(
-      command ?? {},
-      true,
-      ContentType.LIST_ACCOUNTS_V1,
-      ContentType.LIST_ACCOUNTS_V1_RESPONSE
+    return await this.withOutput(
+      this.sendCommand(
+        command ?? {},
+        true,
+        ContentType.LIST_ACCOUNTS_V1,
+        ContentType.LIST_ACCOUNTS_V1_RESPONSE
+      )
     );
   }
 
   async updateAccount(command: UpdateAccountCommand): Promise<Account> {
-    return await this.sendCommand(
-      command,
-      true,
-      ContentType.UPDATE_ACCOUNT_V1,
-      ContentType.UPDATE_ACCOUNT_V1_RESPONSE
+    return await this.withOutput(
+      this.sendCommand(
+        command,
+        true,
+        ContentType.UPDATE_ACCOUNT_V1,
+        ContentType.UPDATE_ACCOUNT_V1_RESPONSE
+      )
     );
   }
 
   async deleteAccount(command: DeleteAccountCommand): Promise<void> {
-    return await this.sendCommand(command, true, ContentType.DELETE_ACCOUNT_V1);
+    await this.sendCommand(command, true, ContentType.DELETE_ACCOUNT_V1);
+    return;
   }
 
   async createApiKey(command: CreateApiKeyCommand): Promise<ApiKeyWithSecret> {
-    return await this.sendCommand(
-      command,
-      true,
-      ContentType.CREATE_API_KEY_V1,
-      ContentType.CREATE_API_KEY_V1_RESPONSE
+    return await this.withOutput(
+      this.sendCommand(
+        command,
+        true,
+        ContentType.CREATE_API_KEY_V1,
+        ContentType.CREATE_API_KEY_V1_RESPONSE
+      )
     );
   }
 
   async listApiKeys(command?: ListApiKeysCommand): Promise<ApiKey[]> {
-    return await this.sendCommand(
-      command ?? {},
-      true,
-      ContentType.LIST_API_KEYS_V1,
-      ContentType.LIST_API_KEYS_V1_RESPONSE
+    return await this.withOutput(
+      this.sendCommand(
+        command ?? {},
+        true,
+        ContentType.LIST_API_KEYS_V1,
+        ContentType.LIST_API_KEYS_V1_RESPONSE
+      )
     );
   }
 
   async deleteApiKey(command: DeleteApiKeyCommand): Promise<void> {
-    return await this.sendCommand(command, true, ContentType.DELETE_API_KEY_V1);
+    await this.sendCommand(command, true, ContentType.DELETE_API_KEY_V1);
+    return;
   }
 
   async createEncryptionKey(
     command: CreateEncryptionKeyCommand
   ): Promise<EncryptionKey> {
-    return await this.sendCommand(
-      command,
-      true,
-      ContentType.CREATE_ENCRYPTION_KEY_V1,
-      ContentType.CREATE_ENCRYPTION_KEY_V1_RESPONSE
+    return await this.withOutput(
+      this.sendCommand(
+        command,
+        true,
+        ContentType.CREATE_ENCRYPTION_KEY_V1,
+        ContentType.CREATE_ENCRYPTION_KEY_V1_RESPONSE
+      )
     );
   }
 
   async describeEncryptionKey(
     command: CreateEncryptionKeyCommand
   ): Promise<EncryptionKey> {
-    return await this.sendCommand(
-      command,
-      true,
-      ContentType.DESCRIBE_ENCRYPTION_KEY_V1,
-      ContentType.DESCRIBE_ENCRYPTION_KEY_V1_RESPONSE
+    return await this.withOutput(
+      this.sendCommand(
+        command,
+        true,
+        ContentType.DESCRIBE_ENCRYPTION_KEY_V1,
+        ContentType.DESCRIBE_ENCRYPTION_KEY_V1_RESPONSE
+      )
     );
   }
 
   async exportEncryptionKey(
     command: ExportEncryptionKeyCommand
   ): Promise<EncryptionKeyExport> {
-    return await this.sendCommand(
-      command,
-      true,
-      ContentType.EXPORT_ENCRYPTION_KEY_V1,
-      ContentType.EXPORT_ENCRYPTION_KEY_V1_RESPONSE
+    return await this.withOutput(
+      this.sendCommand(
+        command,
+        true,
+        ContentType.EXPORT_ENCRYPTION_KEY_V1,
+        ContentType.EXPORT_ENCRYPTION_KEY_V1_RESPONSE
+      )
     );
   }
 
   async listEncryptionKeys(
     command?: ListEncryptionKeysCommand
   ): Promise<EncryptionKey[]> {
-    return await this.sendCommand(
-      command ?? {},
-      true,
-      ContentType.LIST_ENCRYPTION_KEYS_V1,
-      ContentType.LIST_ENCRYPTION_KEYS_V1_RESPONSE
+    return await this.withOutput(
+      this.sendCommand(
+        command ?? {},
+        true,
+        ContentType.LIST_ENCRYPTION_KEYS_V1,
+        ContentType.LIST_ENCRYPTION_KEYS_V1_RESPONSE
+      )
     );
   }
 
   async deleteEncryptionKey(
     command: DeleteEncryptionKeyCommand
   ): Promise<void> {
-    return await this.sendCommand(
-      command,
-      true,
-      ContentType.DELETE_ENCRYPTION_KEY_V1
-    );
+    await this.sendCommand(command, true, ContentType.DELETE_ENCRYPTION_KEY_V1);
+    return;
   }
 
   async encrypt(encryptionKeyId: string, data: string): Promise<string> {
