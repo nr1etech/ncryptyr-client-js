@@ -14,7 +14,10 @@
     "url": "https://github.com/nr1etech/ncryptyr-client-js.git"
   },
   "files": [
-    "/dist"
+    "/dist/**/*.d.ts",
+    "/dist/**/*.js",
+    "/dist/**/*.js.map",
+    "!/dist/**/*.test.*"
   ],
   "scripts": {
     "build": "tsc",
