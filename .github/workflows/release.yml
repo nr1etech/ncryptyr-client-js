@@ -39,7 +39,7 @@
           run: |
             git config user.email "365211+erikrj@users.noreply.github.com"
             git config user.name "Erik Jensen"
-            git commit -a -m "$VERSION"
+            git commit -a -m "$VERSION\n[skip ci]"
             git push
         - name: Tag Release
           if: matrix.node-version == 20 && github.ref == 'refs/heads/main'
