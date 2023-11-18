@@ -3,6 +3,7 @@
       branches:
         - main
         - develop
+  name: ci
   jobs:
     publish:
       uses: ./.github/workflows/javascript-library.yml
