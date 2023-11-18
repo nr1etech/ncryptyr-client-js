@@ -4,7 +4,7 @@
  * @group integration/http-client
  */
 
-import {HttpClient, StatusCode} from "../../src/http-client"
+import {HttpClient, StatusCode} from "../../src"
 
 test("Test HttpGetRequest", async () => {
   const res = await new HttpClient("https://www.google.com")

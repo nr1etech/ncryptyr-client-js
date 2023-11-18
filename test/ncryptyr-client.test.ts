@@ -6,7 +6,6 @@
 import {TestHelper} from "./test-helper";
 import {ApiKey, EncryptionKeyType} from "../dist";
 
-
 jest.setTimeout(10000);
 
 test("Happy Path", async () => {
