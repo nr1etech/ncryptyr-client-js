@@ -4,7 +4,7 @@
         - main
         - develop
   jobs:
-    on-push:
+    publish:
       uses: ./.github/workflows/javascript-library.yml
       with:
         github-email: "365211+erikrj@users.noreply.github.com"
