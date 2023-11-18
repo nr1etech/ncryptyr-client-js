@@ -10,9 +10,9 @@
 - [GitHub Repository](https://github.com/netradius/ncryptyr-client-js)
 - [API Documentation](https://api.ncryptyr.com/docs/)
 
+[github-url]: https://github.com/nr1etech/ncryptyr-client-js/actions
+[github-image]: https://github.com/nr1etech/ncryptyr-client-js/workflows/ci/badge.svg
 [npm-url]: https://npmjs.org/package/@ncryptyr/client
 [npm-image]: https://img.shields.io/npm/v/@ncryptyr/client.svg
 [gts-image]: https://img.shields.io/badge/code%20style-google-blueviolet.svg
 [gts-url]: https://github.com/google/gts
-[github-url]: https://github.com/nr1etech/ncryptyr-client-js/actions
-[github-image]: https://github.com/nr1etech/ncryptyr-client-js/workflows/ci/badge.svg
