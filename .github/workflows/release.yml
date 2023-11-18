@@ -2,7 +2,7 @@
     workflow_call:
       push:
         branches:
-#          - main
+          - main
           - develop
   jobs:
     build:
