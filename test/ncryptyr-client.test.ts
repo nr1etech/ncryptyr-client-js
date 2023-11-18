@@ -4,7 +4,7 @@
  * @group integration/ncryptyr-client
  */
 import {TestHelper} from './test-helper';
-import {ApiKey, EncryptionKeyType} from "../src";
+import {ApiKey, EncryptionKeyType} from '../src';
 
 jest.setTimeout(10000);
 

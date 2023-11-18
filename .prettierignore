@@ -2,3 +2,4 @@ dist
 .editorconfig
 .idea
 .github
+pnpm-lock.yaml
