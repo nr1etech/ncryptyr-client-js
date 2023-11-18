@@ -23,10 +23,10 @@
         - name: Install Dependencies
           run: pnpm i --frozen-lockfile --prefer-offline
         - name: Increment alpha version
-          if: github.ref == 'refs/heads/develop'
+          if: matrix.node-version == 20 && github.ref == 'refs/heads/develop'
           run: echo VERSION="$(pnpm version prepatch --preid alpha --no-git-tag-version)" >> $GITHUB_ENV
         - name: Increment patch version
-          if: github.ref == 'refs/heads/main'
+          if: matrix.node-version == 20 && github.ref == 'refs/heads/main'
           run: echo VERSION="$(pnpm version patch --no-git-tag-version)" >> $GITHUB_ENV
         - name: Build
           run: pnpm build
