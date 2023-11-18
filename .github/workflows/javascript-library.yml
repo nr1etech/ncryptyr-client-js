@@ -75,7 +75,7 @@ jobs:
         if: matrix.node-version == inputs.publish-node-version
         run: |
           git config user.email "${{ inputs.github-email }}"
-          git config user.name "${{ inputs.github-username }}"
+          git config user.name "${{ inputs.github-name }}"
           git commit -a -m "$VERSION\nGitHub Run Number ${{ github.run_number }}\n[skip ci]"
           git push
       - name: Tag Release
