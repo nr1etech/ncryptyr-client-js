@@ -10,7 +10,6 @@
       strategy:
         matrix:
           node-version: [18, 20]
-          registry-url: [https://registry.npmjs.org/, https://npm.pkg.github.com/]
       steps:
         - uses: actions/checkout@v4
         - uses: pnpm/action-setup@v2
