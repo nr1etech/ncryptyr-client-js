@@ -38,10 +38,12 @@ jobs:
       matrix:
         node-version: ${{ fromJson(inputs.node-versions) }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           ssh-key: ${{ secrets.deploy-key }}
-      - uses: pnpm/action-setup@v2
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
         with:
           version: ${{ inputs.pnpm-version }}
           run_install: false
@@ -59,34 +61,34 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.node-version }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-${{ matrix.node-version }}pnpm-store-
-      - name: Install Dependencies
+      - name: Install dependencies
         run: pnpm i --frozen-lockfile --prefer-offline
       - name: Increment alpha version
         if: matrix.node-version == inputs.publish-node-version && github.ref == 'refs/heads/develop'
         run: echo VERSION="$(pnpm version prerelease --preid alpha --no-git-tag-version)" >> $GITHUB_ENV
-      - name: Increment patch version
+      - name: Increment release version
         if: matrix.node-version == inputs.publish-node-version && github.ref == 'refs/heads/main'
         run: echo VERSION="$(pnpm version patch --no-git-tag-version)" >> $GITHUB_ENV
       - name: Build
         run: pnpm build
       - name: Test
         run: pnpm test
-      - name: Git Config
+      - name: Setup git config
         if: matrix.node-version == inputs.publish-node-version
         run: |
           git config user.email "${{ inputs.github-email }}"
           git config user.name "${{ inputs.github-name }}"
-      - name: Commit Version Bump
+      - name: Commit and push version bump
         if: matrix.node-version == inputs.publish-node-version
         run: |
           git commit -a -m "$VERSION\nGitHub Run Number ${{ github.run_number }}\n[skip ci]"
           git push
-      - name: Tag Release
+      - name: Tag version bump
         if: matrix.node-version == inputs.publish-node-version && github.ref == 'refs/heads/main'
         run: |
           git tag -a "$VERSION" -m "$VERSION"
           git push origin "$VERSION"
-      - name: Publish
+      - name: Publish to registry
         if: matrix.node-version == inputs.publish-node-version
         run: |
           pnpm config set "$(npm config get registry | sed -e 's/https://g'):_authToken" "${{ secrets.npm-auth-token }}"
