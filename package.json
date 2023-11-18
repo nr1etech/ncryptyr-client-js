@@ -1,12 +1,14 @@
 {
-  "name": "@ncryptyr/client",
+  "name": "client",
   "description": "Client for the Ncryptyr API",
   "version": "0.0.9-alpha.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "NR1E, Inc",
   "publishConfig": {
-    "access": "public"
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "scope": "@ncryptyr"
   },
   "license": "BSD-3-Clause",
   "repository": {

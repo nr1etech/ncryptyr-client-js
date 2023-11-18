@@ -44,8 +44,13 @@
           run: |
             git tag -a "$VERSION" -m "$VERSION"
             git push origin "$VERSION"
-        - name: Publish
-          if: matrix.node-version == 20
-          run: pnpm publish --access public
+        - name: Publish Alpha
+          if: matrix.node-version == 20 && github.ref == 'refs/heads/develop'
+          run: pnpm publish --access public --publish-branch develop
+          env:
+            NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        - name: Publish Release
+          if: matrix.node-version == 20 && github.ref == 'refs/heads/main'
+          run: pnpm publish --access public --publish-branch main
           env:
             NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
