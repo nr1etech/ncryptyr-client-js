@@ -48,6 +48,4 @@
           if: matrix.node-version == 20
           run: |
             npm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_AUTH_TOKEN }}"
-            pnpm publish --access public --publish-branch ${GITHUB_REF#refs/heads/}
-
-
+            pnpm publish --publish-branch ${GITHUB_REF#refs/heads/}
