@@ -49,3 +49,6 @@ export class HelperTest {
     };
   }
 }
+test('Empty Test', async () => {
+  // do nothing
+});

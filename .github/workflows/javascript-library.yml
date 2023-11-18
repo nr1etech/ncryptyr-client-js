@@ -88,7 +88,7 @@ jobs:
         run: |
           git tag -a "$VERSION" -m "$VERSION"
           git push origin "$VERSION"
-      - name: Publish to registry
+      - name: Publish ${{ env.VERSION }} to registry
         if: matrix.node-version == inputs.publish-node-version
         run: |
           pnpm config set "$(npm config get registry | sed -e 's/https://g'):_authToken" "${{ secrets.npm-auth-token }}"
