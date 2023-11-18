@@ -24,14 +24,19 @@ import {ContentType} from "./content-type";
 const DEFAULT_BASE_URL = "https://api.ncryptyr.com";
 const USER_AGENT = "ncryptyr-client";
 
+export interface NcryptyrClientProps {
+  readonly baseUrl?: string;
+  readonly apiKey?: string;
+}
+
 export class NcryptyrClient {
 
   readonly baseUrl: string;
   protected client: HttpClient;
 
-  constructor(apiKey: string, baseUrl?: string) {
-    this.baseUrl = baseUrl ?? DEFAULT_BASE_URL
-    this.client = new HttpClient(this.baseUrl).apiKey(apiKey);
+  constructor(props?: NcryptyrClientProps) {
+    this.baseUrl = props.baseUrl ?? DEFAULT_BASE_URL;
+    this.client = new HttpClient(this.baseUrl).apiKey(props.apiKey);
   }
 
   apiKey(secret: string): NcryptyrClient {

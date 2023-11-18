@@ -23,11 +23,13 @@ export class HttpClient {
   }
 
   apiKey(secret: string): HttpClient {
-    // TODO Review this
-    // if (Object.keys(this.authHeaders).length > 0) {
-    //   throw Error("Authentication method is already set");
-    // }
-    this.authHeaders["Api-Key"] = secret;
+    if (secret) {
+      // TODO Review this
+      // if (Object.keys(this.authHeaders).length > 0) {
+      //   throw Error("Authentication method is already set");
+      // }
+      this.authHeaders["Api-Key"] = secret;
+    }
     return this;
   }
 
