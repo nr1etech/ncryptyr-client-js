@@ -9,7 +9,7 @@ on:
       publish-node-version:
         description: "Node version to use for publish"
         required: false
-        default: "20"
+        default: 20
         type: number
       pnpm-version:
         description: "PNPM version to use"
