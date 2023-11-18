@@ -1,6 +1,6 @@
-import {Account, ApiKey, Contact} from "../src";
-import {NcryptyrClient} from "../src";
-import * as process from "process";
+import {Account, ApiKey, Contact} from '../src';
+import {NcryptyrClient} from '../src';
+import * as process from 'process';
 
 export interface NewAccountOutput {
   readonly client: NcryptyrClient;
@@ -9,11 +9,11 @@ export interface NewAccountOutput {
 }
 
 export class TestHelper {
-
   static client(apiKey?: string): NcryptyrClient {
     return new NcryptyrClient({
-      baseUrl: process.env.NCRYPTYR_BASE_URL ?? "https://api.stage.ncryptyr.com",
-      apiKey: apiKey
+      baseUrl:
+        process.env.NCRYPTYR_BASE_URL ?? 'https://api.stage.ncryptyr.com',
+      apiKey: apiKey,
     });
   }
 
@@ -23,9 +23,9 @@ export class TestHelper {
 
   static contact(): Contact {
     return {
-      name: "Quality Assurance",
-      email: "ncryptyr-client-test@ncryptyr.com"
-    }
+      name: 'Quality Assurance',
+      email: 'ncryptyr-client-test@ncryptyr.com',
+    };
   }
 
   static async newAccount(): Promise<NewAccountOutput> {
@@ -34,19 +34,18 @@ export class TestHelper {
     const contact = TestHelper.contact();
     const out = await client.enroll({
       id: accountId,
-      contact: TestHelper.contact()
+      contact: TestHelper.contact(),
     });
     expect(out.account.contact).toEqual(contact);
     expect(out.account.createdDate).toBeDefined();
     expect(out.apiKey.secret).toBeDefined();
     expect(out.apiKey.createdDate).toBeDefined();
-    expect(out.apiKey.id).toEqual("master");
+    expect(out.apiKey.id).toEqual('master');
     expect(out.apiKey.accountId).toEqual(accountId);
     client.apiKey(out.apiKey.secret);
     return {
       client,
-      ...out
-    }
+      ...out,
+    };
   }
 }
-

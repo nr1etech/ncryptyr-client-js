@@ -3,12 +3,12 @@
  *
  * @group integration/ncryptyr-client
  */
-import {TestHelper} from "./test-helper";
-import {ApiKey, EncryptionKeyType} from "../dist";
+import {TestHelper} from './test-helper';
+import {ApiKey, EncryptionKeyType} from '../dist';
 
 jest.setTimeout(10000);
 
-test("Happy Path", async () => {
+test('Happy Path', async () => {
   const newAccount = await TestHelper.newAccount();
   const client = newAccount.client;
   const account = newAccount.account;
@@ -27,38 +27,38 @@ test("Happy Path", async () => {
 
     let updateAccount = await client.updateAccount({
       contact: {
-        name: "Quality Assurance Updated"
-      }
+        name: 'Quality Assurance Updated',
+      },
     });
-    expect(updateAccount.contact.name).toEqual("Quality Assurance Updated");
+    expect(updateAccount.contact.name).toEqual('Quality Assurance Updated');
 
     updateAccount = await client.updateAccount({
       contact: {
-        name: "Quality Assurance",
-        email: "qa@ncryptyr.com"
-      }
+        name: 'Quality Assurance',
+        email: 'qa@ncryptyr.com',
+      },
     });
-    expect(updateAccount.contact.name).toEqual("Quality Assurance");
-    expect(updateAccount.contact.email).toEqual("qa@ncryptyr.com");
+    expect(updateAccount.contact.name).toEqual('Quality Assurance');
+    expect(updateAccount.contact.email).toEqual('qa@ncryptyr.com');
 
     updateAccount = await client.updateAccount({
       id: account.id,
-      contact: account.contact
+      contact: account.contact,
     });
     expect(updateAccount).toEqual(account);
 
     let apiKeyWithSecret = await client.createApiKey({
-      id: "TestKey"
+      id: 'TestKey',
     });
-    expect(apiKeyWithSecret.id).toEqual("TestKey");
+    expect(apiKeyWithSecret.id).toEqual('TestKey');
     expect(apiKeyWithSecret.accountId).toEqual(account.id);
     expect(apiKeyWithSecret.createdDate).toBeDefined();
     expect(apiKeyWithSecret.secret).toBeDefined();
 
-    let apiKey:ApiKey = {
+    let apiKey: ApiKey = {
       id: apiKeyWithSecret.id,
       accountId: apiKeyWithSecret.accountId,
-      createdDate: apiKeyWithSecret.createdDate
+      createdDate: apiKeyWithSecret.createdDate,
     };
 
     let listApiKeys = await client.listApiKeys();
@@ -73,17 +73,19 @@ test("Happy Path", async () => {
     listApiKeys = await client.listApiKeys();
     expect(listApiKeys.length).toEqual(1);
 
-    let encryptionKey1 = await client.createEncryptionKey({id: "TestKey1"});
-    expect(encryptionKey1.id).toEqual("TestKey1");
+    let encryptionKey1 = await client.createEncryptionKey({id: 'TestKey1'});
+    expect(encryptionKey1.id).toEqual('TestKey1');
     expect(encryptionKey1.accountId).toEqual(account.id);
     expect(encryptionKey1.createdDate).toBeDefined();
     expect(encryptionKey1.type).toEqual(EncryptionKeyType.AES_128);
 
-    let describeEncryptionKey = await client.describeEncryptionKey({id: "TestKey1"});
+    let describeEncryptionKey = await client.describeEncryptionKey({
+      id: 'TestKey1',
+    });
     expect(describeEncryptionKey).toEqual(encryptionKey1);
 
-    let encryptionKey2 = await client.createEncryptionKey({id: "TestKey2"});
-    expect(encryptionKey2.id).toEqual("TestKey2");
+    let encryptionKey2 = await client.createEncryptionKey({id: 'TestKey2'});
+    expect(encryptionKey2.id).toEqual('TestKey2');
     expect(encryptionKey2.accountId).toEqual(account.id);
     expect(encryptionKey2.createdDate).toBeDefined();
     expect(encryptionKey2.type).toEqual(EncryptionKeyType.AES_128);
@@ -98,10 +100,9 @@ test("Happy Path", async () => {
     expect(encryptionKeys.length).toEqual(1);
     expect(encryptionKeys).toContainEqual(encryptionKey1);
 
-    let ciphertext = await client.encrypt("TestKey1", "some awesome text");
+    let ciphertext = await client.encrypt('TestKey1', 'some awesome text');
     let text = await client.decrypt(ciphertext);
-    expect(text).toEqual("some awesome text");
-
+    expect(text).toEqual('some awesome text');
   } finally {
     await client.deleteAccount({id: account.id});
   }

@@ -19,7 +19,16 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "jest"
+    "test": "jest",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "compile": "tsc",
+    "fix": "gts fix",
+    "prepare": "pnpm run compile",
+    "pretest": "pnpm run compile",
+    "posttest": "pnpm run lint",
+    "prettycheck": "prettier --check .",
+    "makepretty": "prettier --write ."
   },
   "dependencies": {
     "url": "^0.11.3"
@@ -27,16 +36,10 @@
   "devDependencies": {
     "@types/jest": "^28.1.8",
     "@types/node": "^20.9.1",
-    "@typescript-eslint/eslint-plugin": "^6.11.0",
-    "@typescript-eslint/parser": "^6.11.0",
-    "eslint": "^8.54.0",
-    "eslint-config-google": "^0.14.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.0.1",
     "jest": "^29.7.0",
     "jest-runner-groups": "^2.2.0",
-    "prettier": "^3.1.0",
     "ts-jest": "^29.1.1",
-    "typescript": "~5.2.2"
+    "typescript": "~5.2.2",
+    "gts": "^5.2.0"
   }
 }

@@ -1,11 +1,10 @@
-import { URLSearchParams } from "url";
-import {StatusCode} from "./status-code";
+import {URLSearchParams} from 'url';
+import {StatusCode} from './status-code';
 
 type Headers = Record<string, string>;
 type Parameters = Record<string, string>;
 
 export class HttpClient {
-
   readonly baseUrl: string;
   readonly commonHeaders: Headers;
   readonly authHeaders: Headers;
@@ -17,26 +16,26 @@ export class HttpClient {
   }
 
   userAgent(userAgent: string): HttpClient {
-    this.commonHeaders["User-Agent"] = userAgent;
+    this.commonHeaders['User-Agent'] = userAgent;
     return this;
   }
 
-  apiKey(secret: string): HttpClient {
+  apiKey(secret: string | undefined): HttpClient {
     if (secret) {
       // TODO Review this
       // if (Object.keys(this.authHeaders).length > 0) {
       //   throw Error("Authentication method is already set");
       // }
-      this.authHeaders["Api-Key"] = secret;
+      this.authHeaders['Api-Key'] = secret;
     }
     return this;
   }
 
   accessToken(accessToken: string): HttpClient {
     if (Object.keys(this.authHeaders).length > 0) {
-      throw Error("Authentication method is already set");
+      throw Error('Authentication method is already set');
     }
-    this.authHeaders["Authorization"] = `Bearer ${accessToken}`;
+    this.authHeaders['Authorization'] = `Bearer ${accessToken}`;
     return this;
   }
 
@@ -46,7 +45,6 @@ export class HttpClient {
 }
 
 export class HttpRequest {
-
   readonly client: HttpClient;
   path: string;
   headers: Headers;
@@ -66,8 +64,8 @@ export class HttpRequest {
     if (authRequired === undefined || authRequired) {
       this.headers = {
         ...this.headers,
-        ...this.client.authHeaders
-      }
+        ...this.client.authHeaders,
+      };
       // this.headers = {...this.client.commonHeaders, ...this.client.authHeaders};
     }
     return this;
@@ -88,17 +86,18 @@ export class HttpRequest {
 }
 
 export class HttpGetRequest {
-
   readonly request: HttpRequest;
   parameters: Parameters;
-
 
   constructor(request: HttpRequest) {
     this.request = request;
     this.parameters = {};
   }
 
-  parameter(name: string | undefined, value: string | undefined): HttpGetRequest {
+  parameter(
+    name: string | undefined,
+    value: string | undefined
+  ): HttpGetRequest {
     if (value !== undefined && name !== undefined) {
       this.parameters[name] = value;
     }
@@ -108,40 +107,39 @@ export class HttpGetRequest {
   async send(): Promise<HttpResponse> {
     let url = this.request.client.baseUrl + this.request.path;
     if (Object.keys(this.parameters).length > 0) {
-      url = url + "?" + new URLSearchParams(this.parameters);
+      url = url + '?' + new URLSearchParams(this.parameters);
     }
     const res = await fetch(url, {
-      method: "GET",
-      headers: this.request.headers
+      method: 'GET',
+      headers: this.request.headers,
     });
     return new HttpResponse(res);
   }
 }
 
 export class HttpPostRequest {
-
   readonly request: HttpRequest;
   headers: Headers;
-  parameters: Parameters;
-  body: string | object;
+  parameters?: Parameters;
+  body?: string | object;
 
   constructor(request: HttpRequest) {
     this.request = request;
     this.headers = {
-      ...request.headers
-    }
+      ...request.headers,
+    };
   }
 
   formData(name: string, value: string): HttpPostRequest {
     if (this.body !== undefined) {
-      throw new Error("Body already set");
+      throw new Error('Body already set');
     }
     if (this.parameters === undefined) {
-      this.parameters = {}
+      this.parameters = {};
     }
     this.parameters[name] = value;
-    if (!("Content-Type" in this.headers)) {
-      this.headers["Content-Type"] = "application/x-www-form-urlencoded";
+    if (!('Content-Type' in this.headers)) {
+      this.headers['Content-Type'] = 'application/x-www-form-urlencoded';
     }
     return this;
   }
@@ -151,42 +149,41 @@ export class HttpPostRequest {
       throw new Error('Parameters already set');
     }
     this.body = body;
-    this.headers["Content-Type"] = contentType ?? "application/json";
+    this.headers['Content-Type'] = contentType ?? 'application/json';
     return this;
   }
 
   text(body: string, contentType?: string): HttpPostRequest {
     this.body = body;
-    this.headers["Content-Type"] = contentType ?? "text/plain";
+    this.headers['Content-Type'] = contentType ?? 'text/plain';
     return this;
   }
 
   async send(): Promise<HttpResponse> {
-    let url = this.request.client.baseUrl + this.request.path;
+    const url = this.request.client.baseUrl + this.request.path;
     let body = undefined;
     if (this.parameters !== undefined) {
       body = new URLSearchParams(this.parameters);
     } else if (this.body !== undefined) {
-      if (typeof this.body === "string") {
+      if (typeof this.body === 'string') {
         body = this.body;
       } else {
         body = JSON.stringify(this.body);
       }
       // TODO Add Content-Length
     } else {
-      this.headers["Content-Length"] = "0";
+      this.headers['Content-Length'] = '0';
     }
     const res = await fetch(url, {
-      method: "POST",
+      method: 'POST',
       headers: this.headers,
-      body
+      body,
     });
     return new HttpResponse(res);
   }
 }
 
 export class HttpResponse {
-
   readonly response: Response;
 
   constructor(response: Response) {
@@ -194,13 +191,15 @@ export class HttpResponse {
   }
 
   success(): boolean {
-    return this.response.status === StatusCode.OK
-      || this.response.status === StatusCode.CREATED
-      || this.response.status === StatusCode.NO_CONTENT;
+    return (
+      this.response.status === StatusCode.OK ||
+      this.response.status === StatusCode.CREATED ||
+      this.response.status === StatusCode.NO_CONTENT
+    );
   }
 
-  contentType(): string {
-    return this.response.headers.get("content-type");
+  contentType(): string | null {
+    return this.response.headers.get('content-type');
   }
 
   status(): number {

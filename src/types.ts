@@ -4,7 +4,7 @@ export interface Contact {
 }
 
 export interface Account {
-  readonly id: string,
+  readonly id: string;
   readonly contact: Contact;
   readonly createdDate: number;
 }
@@ -20,7 +20,7 @@ export interface ApiKeyWithSecret extends ApiKey {
 }
 
 export enum EncryptionKeyType {
-  AES_128 = "AES-128"
+  AES_128 = 'AES-128',
 }
 
 export interface EncryptionKey {
@@ -45,7 +45,7 @@ export interface EnrollCommand {
   readonly contact: {
     readonly name: string;
     readonly email: string;
-  }
+  };
 }
 
 export interface EnrollCommandOutput {
@@ -70,7 +70,7 @@ export interface UpdateAccountCommand {
   readonly contact?: {
     readonly name?: string;
     readonly email?: string;
-  }
+  };
 }
 
 export interface DeleteAccountCommand {

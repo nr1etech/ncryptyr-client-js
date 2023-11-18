@@ -1,2 +1,2 @@
-export * from "./http-client";
-export * from "./status-code";
+export * from './http-client';
+export * from './status-code';

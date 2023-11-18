@@ -2,34 +2,34 @@ on:
   workflow_call:
     inputs:
       node-versions:
-        description: "Node versions to use"
+        description: 'Node versions to use'
         required: false
-        default: "[18,20]"
+        default: '[18,20]'
         type: string
       publish-node-version:
-        description: "Node version to use for publish"
+        description: 'Node version to use for publish'
         required: false
-        default: "20"
+        default: '20'
         type: string
       pnpm-version:
-        description: "PNPM version to use"
+        description: 'PNPM version to use'
         required: false
-        default: "8"
+        default: '8'
         type: string
       github-email:
-        description: "GitHub email for pushing"
+        description: 'GitHub email for pushing'
         type: string
         required: true
       github-name:
-        description: "GitHub name for pushing"
+        description: 'GitHub name for pushing'
         type: string
         required: true
     secrets:
       deploy-key:
-        description: "SSH private key for versioning"
+        description: 'SSH private key for versioning'
         required: true
       npm-auth-token:
-        description: "NPM auth token for publishing"
+        description: 'NPM auth token for publishing'
         required: true
 jobs:
   javascript-library:
