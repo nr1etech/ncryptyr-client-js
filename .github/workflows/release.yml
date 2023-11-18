@@ -33,17 +33,17 @@
         - name: Test
           run: pnpm test
         - name: Commit
-          if: github.matrix.node-version == 20
+          if: matrix.node-version == 20
           run: |
             git commit -a -m "$VERSION"
             git push
         - name: Tag Release
-          if: github.matrix.node-version == 20 && github.ref == 'refs/heads/main'
+          if: matrix.node-version == 20 && github.ref == 'refs/heads/main'
           run: |
             git tag -a "$VERSION" -m "$VERSION"
             git push origin "$VERSION"
         - name: Publish
-          if: github.matrix.node-version == 20
+          if: matrix.node-version == 20
           run: pnpm publish --access public
           env:
             NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
