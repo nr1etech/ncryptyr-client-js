@@ -69,10 +69,10 @@ jobs:
       - name: Increment release version
         if: matrix.node-version == inputs.publish-node-version && github.ref == 'refs/heads/main'
         run: echo VERSION="$(pnpm version patch --no-git-tag-version)" >> $GITHUB_ENV
-      - name: Build
-        run: pnpm build
-      - name: Test
-        run: pnpm test
+      - run: pnpm check
+      - run: pnpm lint
+      - run: pnpm build
+      - run: pnpm test
       - name: Setup git config
         if: matrix.node-version == inputs.publish-node-version
         run: |

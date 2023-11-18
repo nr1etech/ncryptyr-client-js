@@ -27,7 +27,7 @@
     "prepare": "pnpm run compile",
     "pretest": "pnpm run compile",
     "posttest": "pnpm run lint",
-    "prettycheck": "prettier --check .",
+    "check": "prettier --check .",
     "makepretty": "prettier --write ."
   },
   "dependencies": {
