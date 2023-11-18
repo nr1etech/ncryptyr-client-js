@@ -22,7 +22,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "node-fetch": "^2.7.0",
+    "node-fetch": "^3.3.2",
     "url": "^0.11.3"
   },
   "devDependencies": {
