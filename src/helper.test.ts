@@ -1,5 +1,5 @@
-import {Account, ApiKey, Contact} from '../src';
-import {NcryptyrClient} from '../src';
+import {Account, ApiKey, Contact} from './index';
+import {NcryptyrClient} from './index';
 import * as process from 'process';
 
 export interface NewAccountOutput {
@@ -8,7 +8,7 @@ export interface NewAccountOutput {
   readonly apiKey: ApiKey;
 }
 
-export class TestHelper {
+export class HelperTest {
   static client(apiKey?: string): NcryptyrClient {
     return new NcryptyrClient({
       baseUrl:
@@ -31,10 +31,10 @@ export class TestHelper {
   static async newAccount(): Promise<NewAccountOutput> {
     const client = this.client();
     const accountId = this.accountId();
-    const contact = TestHelper.contact();
+    const contact = HelperTest.contact();
     const out = await client.enroll({
       id: accountId,
-      contact: TestHelper.contact(),
+      contact: HelperTest.contact(),
     });
     expect(out.account.contact).toEqual(contact);
     expect(out.account.createdDate).toBeDefined();

@@ -3,13 +3,13 @@
  *
  * @group integration/ncryptyr-client
  */
-import {TestHelper} from './test-helper';
-import {ApiKey, EncryptionKeyType} from '../src';
+import {HelperTest} from './helper.test';
+import {ApiKey, EncryptionKeyType} from './index';
 
 jest.setTimeout(10000);
 
 test('Happy Path', async () => {
-  const newAccount = await TestHelper.newAccount();
+  const newAccount = await HelperTest.newAccount();
   const client = newAccount.client;
   const account = newAccount.account;
   try {
