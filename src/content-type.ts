@@ -1,6 +1,4 @@
 export enum ContentType {
-  ENROLL_V1 = 'application/vnd.ncryptyr.enroll.v1+json',
-  ENROLL_V1_RESPONSE = 'application/vnd.ncryptyr.enroll-response.v1+json',
   DESCRIBE_ACCOUNT_V1 = 'application/vnd.ncryptyr.describe-account.v1+json',
   DESCRIBE_ACCOUNT_V1_RESPONSE = 'application/vnd.ncryptyr.describe-account-response.v1+json',
   LIST_ACCOUNTS_V1 = 'application/vnd.ncryptyr.list-accounts.v1+json',

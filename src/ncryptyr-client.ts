@@ -6,9 +6,6 @@ import {
   NotFoundError,
 } from './errors';
 import {
-  Account,
-  ApiKey,
-  ApiKeyWithSecret,
   CreateApiKeyCommand,
   CreateEncryptionKeyCommand,
   DeleteAccountCommand,
@@ -17,16 +14,23 @@ import {
   DescribeAccountCommand,
   EncryptionKey,
   EncryptionKeyExport,
-  EnrollCommand,
-  EnrollCommandOutput,
   ExportEncryptionKeyCommand,
   ListAccountsCommand,
   ListAccountsCommandOutput,
   ListApiKeysCommand,
   ListEncryptionKeysCommand,
   UpdateAccountCommand,
-} from './types';
+} from './old-types';
 import {ContentType} from './content-type';
+import {
+  Account,
+  ApiKey,
+  ApiKeyWithSecret,
+  CREATE_ACCOUNT_V1_REQUEST,
+  CreateAccountInput,
+  CreateAccountOutput,
+} from './types';
+import axios from 'axios';
 
 const DEFAULT_BASE_URL = 'https://api.ncryptyr.com';
 const USER_AGENT = 'ncryptyr-client';
@@ -38,15 +42,25 @@ export interface NcryptyrClientProps {
 
 export class NcryptyrClient {
   readonly baseUrl: string;
-  protected client: HttpClient;
+  protected oldClient: HttpClient;
 
   constructor(props?: NcryptyrClientProps) {
     this.baseUrl = props?.baseUrl ?? DEFAULT_BASE_URL;
-    this.client = new HttpClient(this.baseUrl).apiKey(props?.apiKey);
+    this.oldClient = new HttpClient(this.baseUrl).apiKey(props?.apiKey);
+    axios.interceptors.request.use(
+      config => {
+        config.headers['user-agent'] = USER_AGENT;
+        config.headers['content-type'] = 'application/json';
+        return config;
+      },
+      error => {
+        return Promise.reject(error);
+      }
+    );
   }
 
   apiKey(secret: string): NcryptyrClient {
-    this.client.apiKey(secret);
+    this.oldClient.apiKey(secret);
     return this;
   }
 
@@ -91,7 +105,7 @@ export class NcryptyrClient {
     contentType: ContentType,
     expectedContentType?: ContentType
   ): Promise<O | null> {
-    const res = await this.client
+    const res = await this.oldClient
       .userAgent(USER_AGENT)
       .request('/')
       .authRequired(authRequired)
@@ -115,15 +129,17 @@ export class NcryptyrClient {
     throw await this.processFailure(res);
   }
 
-  async enroll(command: EnrollCommand): Promise<EnrollCommandOutput> {
-    return await this.withOutput(
-      this.sendCommand<EnrollCommand, EnrollCommandOutput>(
-        command,
-        false,
-        ContentType.ENROLL_V1,
-        ContentType.ENROLL_V1_RESPONSE
-      )
+  async createAccount(input: CreateAccountInput): Promise<CreateAccountOutput> {
+    const response = await axios.post<CreateAccountOutput>(
+      `${this.baseUrl}/accounts`,
+      input,
+      {
+        headers: {
+          'Content-Type': CREATE_ACCOUNT_V1_REQUEST,
+        },
+      }
     );
+    return response.data;
   }
 
   async describeAccount(command?: DescribeAccountCommand): Promise<Account> {
@@ -253,7 +269,7 @@ export class NcryptyrClient {
   }
 
   async encrypt(encryptionKeyId: string, data: string): Promise<string> {
-    const res = await this.client
+    const res = await this.oldClient
       .userAgent(USER_AGENT)
       .request('/encrypt')
       .header('Encryption-Key', encryptionKeyId)
@@ -268,7 +284,7 @@ export class NcryptyrClient {
   }
 
   async decrypt(ciphertext: string): Promise<string> {
-    const res = await this.client
+    const res = await this.oldClient
       .userAgent(USER_AGENT)
       .request('/decrypt')
       .authRequired()

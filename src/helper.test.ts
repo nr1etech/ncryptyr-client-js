@@ -32,7 +32,7 @@ export class HelperTest {
     const client = this.client();
     const accountId = this.accountId();
     const contact = HelperTest.contact();
-    const out = await client.enroll({
+    const out = await client.createAccount({
       id: accountId,
       contact: HelperTest.contact(),
     });

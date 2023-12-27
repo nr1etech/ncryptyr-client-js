@@ -1,27 +1,4 @@
-export interface Contact {
-  readonly name: string;
-  readonly email: string;
-}
-
-export interface Account {
-  readonly id: string;
-  readonly contact: Contact;
-  readonly createdDate: number;
-}
-
-export interface ApiKey {
-  readonly accountId: string;
-  readonly id: string;
-  readonly createdDate: number;
-}
-
-export interface ApiKeyWithSecret extends ApiKey {
-  readonly secret: string;
-}
-
-export enum EncryptionKeyType {
-  AES_128 = 'AES-128',
-}
+import {Account, ApiKeyWithSecret, EncryptionKeyType} from './types';
 
 export interface EncryptionKey {
   readonly accountId: string;
