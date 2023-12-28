@@ -1,5 +1,5 @@
+import {HttpStatusCode} from '@nr1e/commons/http';
 import {URLSearchParams} from 'url';
-import {StatusCode} from './status-code';
 
 type Headers = Record<string, string>;
 type Parameters = Record<string, string>;
@@ -192,9 +192,9 @@ export class HttpResponse {
 
   success(): boolean {
     return (
-      this.response.status === StatusCode.OK ||
-      this.response.status === StatusCode.CREATED ||
-      this.response.status === StatusCode.NO_CONTENT
+      this.response.status === HttpStatusCode.OK ||
+      this.response.status === HttpStatusCode.CREATED ||
+      this.response.status === HttpStatusCode.NO_CONTENT
     );
   }
 

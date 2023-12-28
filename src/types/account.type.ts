@@ -40,12 +40,16 @@ export const CREATE_ACCOUNT_INPUT_SCHEMA = joi.object({
   }),
 });
 
-export const CREATE_ACCOUNT_V1_REQUEST =
-  'application/vnd.ncryptyr.create-account-request.v1+json';
-export const CREATE_ACCOUNT_V1_RESPONSE =
-  'application/vnd.ncryptyr.create-account-response.v1+json';
-
+export const CREATE_ACCOUNT_V1_INPUT =
+  'application/vnd.ncryptyr.create-account-input.v1+json';
+export const CREATE_ACCOUNT_V1_OUTPUT =
+  'application/vnd.ncryptyr.create-account-output.v1+json';
 export interface CreateAccountOutput {
   readonly account: Account;
   readonly apiKey: ApiKeyWithSecret;
 }
+
+export const GET_ACCOUNT_V1_OUTPUT =
+  'application/vnd.ncryptyr.get-account-output.v1+json';
+
+export type GetAccountOutput = Account;

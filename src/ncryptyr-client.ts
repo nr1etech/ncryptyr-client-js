@@ -1,10 +1,10 @@
-import {HttpClient, HttpResponse, StatusCode} from './http-client';
+import {HttpClient, HttpResponse} from './http-client';
 import {
   BadRequestError,
   ForbiddenError,
   InternalServerError,
   NotFoundError,
-} from './errors';
+} from '@nr1e/commons/errors';
 import {
   CreateApiKeyCommand,
   CreateEncryptionKeyCommand,
@@ -26,14 +26,22 @@ import {
   Account,
   ApiKey,
   ApiKeyWithSecret,
-  CREATE_ACCOUNT_V1_REQUEST,
   CreateAccountInput,
   CreateAccountOutput,
 } from './types';
 import axios from 'axios';
+import {HttpStatusCode} from '@nr1e/commons/http';
 
 const DEFAULT_BASE_URL = 'https://api.ncryptyr.com';
 const USER_AGENT = 'ncryptyr-client';
+
+interface IErrorMessage {
+  message?: string;
+}
+
+function isErrorMessage(error?: IErrorMessage): error is IErrorMessage {
+  return error !== undefined && error.message !== undefined;
+}
 
 export interface NcryptyrClientProps {
   readonly baseUrl?: string;
@@ -43,28 +51,119 @@ export interface NcryptyrClientProps {
 export class NcryptyrClient {
   readonly baseUrl: string;
   protected oldClient: HttpClient;
+  protected client = axios.create();
+  protected logErrorResponses = false;
 
   constructor(props?: NcryptyrClientProps) {
     this.baseUrl = props?.baseUrl ?? DEFAULT_BASE_URL;
-    this.oldClient = new HttpClient(this.baseUrl).apiKey(props?.apiKey);
-    axios.interceptors.request.use(
+    this.oldClient = new HttpClient(this.baseUrl);
+    this.client.interceptors.request.use(
       config => {
         config.headers['user-agent'] = USER_AGENT;
-        config.headers['content-type'] = 'application/json';
+        if (config.data !== undefined) {
+          config.headers['content-type'] = 'application/json';
+        }
         return config;
       },
       error => {
         return Promise.reject(error);
       }
     );
+    if (props?.apiKey) {
+      this.apiKey(props.apiKey);
+    }
   }
 
   apiKey(secret: string): NcryptyrClient {
     this.oldClient.apiKey(secret);
+    this.client.interceptors.request.use(
+      config => {
+        config.headers['api-key'] = secret;
+        return config;
+      },
+      error => {
+        return Promise.reject(error);
+      }
+    );
     return this;
   }
 
-  protected async processFailure(res: HttpResponse): Promise<Error> {
+  logRequests(): NcryptyrClient {
+    this.client.interceptors.request.use(
+      config => {
+        console.log('Request', config);
+        return config;
+      },
+      error => {
+        return Promise.reject(error);
+      }
+    );
+    return this;
+  }
+
+  logResponses(): NcryptyrClient {
+    this.client.interceptors.response.use(
+      config => {
+        console.log('Response', config);
+        return config;
+      },
+      error => {
+        return Promise.reject(error);
+      }
+    );
+    this.logErrorResponses = true;
+    return this;
+  }
+
+  protected processError(error: unknown): unknown {
+    if (error && axios.isAxiosError(error)) {
+      if (this.logErrorResponses && error.response) {
+        console.log('Error', error.response);
+      }
+      if (error.response && isErrorMessage(error.response?.data)) {
+        const message = error.response.data.message;
+        switch (error.response.status) {
+          case HttpStatusCode.INTERNAL_SERVER_ERROR:
+            return new InternalServerError(message);
+          case HttpStatusCode.NOT_FOUND:
+            return new NotFoundError(message);
+          case HttpStatusCode.BAD_REQUEST:
+            return new BadRequestError(message);
+          case HttpStatusCode.FORBIDDEN:
+            return new ForbiddenError(message);
+        }
+        return new Error(message);
+      }
+    }
+    return error;
+  }
+
+  async createAccount(input: CreateAccountInput): Promise<CreateAccountOutput> {
+    try {
+      const response = await this.client.post<CreateAccountOutput>(
+        `${this.baseUrl}/accounts`,
+        input
+      );
+      return response.data;
+    } catch (error) {
+      throw this.processError(error);
+    }
+  }
+
+  async getAccount(accountId?: string): Promise<Account> {
+    try {
+      const response = await this.client.get<Account>(
+        `${this.baseUrl}/accounts/${accountId ?? 'self'}`
+      );
+      return response.data;
+    } catch (error) {
+      throw this.processError(error);
+    }
+  }
+
+  // OLD ////////////////////////////////////////////////////////////////////////////
+
+  protected async processFailureOld(res: HttpResponse): Promise<Error> {
     let message = res.statusText();
     try {
       const content = await res.json<Object>();
@@ -74,16 +173,16 @@ export class NcryptyrClient {
     } catch (error) {
       // Ignore
     }
-    if (res.status() === StatusCode.BAD_REQUEST) {
+    if (res.status() === HttpStatusCode.BAD_REQUEST) {
       return new BadRequestError(message);
     }
-    if (res.status() === StatusCode.NOT_FOUND) {
+    if (res.status() === HttpStatusCode.NOT_FOUND) {
       return new NotFoundError(message);
     }
-    if (res.status() === StatusCode.FORBIDDEN) {
+    if (res.status() === HttpStatusCode.FORBIDDEN) {
       return new ForbiddenError(message);
     }
-    if (res.status() === StatusCode.INTERNAL_ERROR) {
+    if (res.status() === HttpStatusCode.INTERNAL_SERVER_ERROR) {
       return new InternalServerError(message);
     }
     return Error(message);
@@ -121,25 +220,12 @@ export class NcryptyrClient {
           `Expected content type ${expectedContentType} and received ${res.contentType()}`
         );
       }
-      if (res.status() === StatusCode.NO_CONTENT) {
+      if (res.status() === HttpStatusCode.NO_CONTENT) {
         return null;
       }
       return await res.json();
     }
-    throw await this.processFailure(res);
-  }
-
-  async createAccount(input: CreateAccountInput): Promise<CreateAccountOutput> {
-    const response = await axios.post<CreateAccountOutput>(
-      `${this.baseUrl}/accounts`,
-      input,
-      {
-        headers: {
-          'Content-Type': CREATE_ACCOUNT_V1_REQUEST,
-        },
-      }
-    );
-    return response.data;
+    throw await this.processFailureOld(res);
   }
 
   async describeAccount(command?: DescribeAccountCommand): Promise<Account> {
@@ -280,7 +366,7 @@ export class NcryptyrClient {
     if (res.success()) {
       return await res.text();
     }
-    throw await this.processFailure(res);
+    throw await this.processFailureOld(res);
   }
 
   async decrypt(ciphertext: string): Promise<string> {
@@ -294,6 +380,6 @@ export class NcryptyrClient {
     if (res.success()) {
       return await res.text();
     }
-    throw await this.processFailure(res);
+    throw await this.processFailureOld(res);
   }
 }
