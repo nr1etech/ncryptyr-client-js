@@ -26,8 +26,12 @@ import {
   Account,
   ApiKey,
   ApiKeyWithSecret,
+  CREATE_ACCOUNT_V1_INPUT,
   CreateAccountInput,
   CreateAccountOutput,
+  UPDATE_ACCOUNT_V1_INPUT,
+  UpdateAccountInput,
+  UpdateAccountOutput,
 } from './types';
 import axios from 'axios';
 import {HttpStatusCode} from '@nr1e/commons/http';
@@ -142,7 +146,29 @@ export class NcryptyrClient {
     try {
       const response = await this.client.post<CreateAccountOutput>(
         `${this.baseUrl}/accounts`,
-        input
+        input,
+        {
+          headers: {
+            'content-type': CREATE_ACCOUNT_V1_INPUT,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw this.processError(error);
+    }
+  }
+
+  async updateAccount(input: UpdateAccountInput): Promise<UpdateAccountOutput> {
+    try {
+      const response = await this.client.put<UpdateAccountOutput>(
+        `${this.baseUrl}/accounts/${input.id}`,
+        input,
+        {
+          headers: {
+            'content-type': UPDATE_ACCOUNT_V1_INPUT,
+          },
+        }
       );
       return response.data;
     } catch (error) {
@@ -252,7 +278,7 @@ export class NcryptyrClient {
     );
   }
 
-  async updateAccount(command: UpdateAccountCommand): Promise<Account> {
+  async updateAccountOld(command: UpdateAccountCommand): Promise<Account> {
     return await this.withOutput(
       this.sendCommand(
         command,

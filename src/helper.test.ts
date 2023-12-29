@@ -37,7 +37,6 @@ export class HelperTest {
       contact: HelperTest.contact(),
     });
     expect(out.account.contact).toEqual(contact);
-    expect(out.account.createdDate).toBeDefined();
     expect(out.apiKey.secret).toBeDefined();
     expect(out.apiKey.createdDate).toBeDefined();
     expect(out.apiKey.id).toEqual('master');

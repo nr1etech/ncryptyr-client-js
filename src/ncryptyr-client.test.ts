@@ -25,7 +25,7 @@ test('Happy Path', async () => {
     listAccounts = await client.listAccounts({idBeginsWith: account.id});
     expect(listAccounts.accounts).toContainEqual(describeAccount);
 
-    let updateAccount = await client.updateAccount({
+    let updateAccount = await client.updateAccountOld({
       contact: {
         name: 'Quality Assurance Updated',
       },
@@ -33,6 +33,15 @@ test('Happy Path', async () => {
     expect(updateAccount.contact.name).toEqual('Quality Assurance Updated');
 
     updateAccount = await client.updateAccount({
+      id: account.id,
+      contact: {
+        name: 'Quality Assurance Updated X',
+        email: 'test@example.com',
+      },
+    });
+    expect(updateAccount.contact.name).toEqual('Quality Assurance Updated X');
+
+    updateAccount = await client.updateAccountOld({
       contact: {
         name: 'Quality Assurance',
         email: 'qa@ncryptyr.com',
