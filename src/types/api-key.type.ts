@@ -5,7 +5,7 @@ export enum EncryptionKeyType {
 export interface ApiKey {
   readonly accountId: string;
   readonly id: string;
-  readonly createdDate: number;
+  // readonly createdDate: number;
 }
 
 export interface ApiKeyWithSecret extends ApiKey {

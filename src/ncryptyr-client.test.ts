@@ -61,13 +61,13 @@ test('Happy Path', async () => {
     });
     expect(apiKeyWithSecret.id).toEqual('TestKey');
     expect(apiKeyWithSecret.accountId).toEqual(account.id);
-    expect(apiKeyWithSecret.createdDate).toBeDefined();
+    // expect(apiKeyWithSecret.createdDate).toBeDefined();
     expect(apiKeyWithSecret.secret).toBeDefined();
 
     const apiKey: ApiKey = {
       id: apiKeyWithSecret.id,
       accountId: apiKeyWithSecret.accountId,
-      createdDate: apiKeyWithSecret.createdDate,
+      // createdDate: apiKeyWithSecret.createdDate,
     };
 
     let listApiKeys = await client.listApiKeys();
@@ -85,7 +85,7 @@ test('Happy Path', async () => {
     const encryptionKey1 = await client.createEncryptionKey({id: 'TestKey1'});
     expect(encryptionKey1.id).toEqual('TestKey1');
     expect(encryptionKey1.accountId).toEqual(account.id);
-    expect(encryptionKey1.createdDate).toBeDefined();
+    // expect(encryptionKey1.createdDate).toBeDefined();
     expect(encryptionKey1.type).toEqual(EncryptionKeyType.AES_128);
 
     const describeEncryptionKey = await client.describeEncryptionKey({
@@ -96,7 +96,7 @@ test('Happy Path', async () => {
     const encryptionKey2 = await client.createEncryptionKey({id: 'TestKey2'});
     expect(encryptionKey2.id).toEqual('TestKey2');
     expect(encryptionKey2.accountId).toEqual(account.id);
-    expect(encryptionKey2.createdDate).toBeDefined();
+    // expect(encryptionKey2.createdDate).toBeDefined();
     expect(encryptionKey2.type).toEqual(EncryptionKeyType.AES_128);
 
     let encryptionKeys = await client.listEncryptionKeys();

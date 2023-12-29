@@ -4,14 +4,14 @@ export interface EncryptionKey {
   readonly accountId: string;
   readonly id: string;
   readonly type: EncryptionKeyType;
-  readonly createdDate: number;
+  // readonly createdDate: number;
 }
 
 export interface EncryptionKeyExport {
   readonly accountId: string;
   readonly id: string;
   readonly type: EncryptionKeyType;
-  readonly createdDate: number;
+  // readonly createdDate: number;
   readonly version: number;
   readonly key: string;
   readonly iv: string;
