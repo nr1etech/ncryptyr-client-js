@@ -7,7 +7,7 @@ settings:
 dependencies:
   '@nr1e/commons':
     specifier: ^0.0.2-alpha.15
-    version: 0.0.2-alpha.15
+    version: 0.0.2
   axios:
     specifier: ^1.6.3
     version: 1.6.3
@@ -759,8 +759,8 @@ packages:
       fastq: 1.15.0
     dev: true
 
-  /@nr1e/commons@0.0.2-alpha.15:
-    resolution: {integrity: sha512-scIQKlIbwwDhHVPqF3OKCJlhQDA/MNge5vtnrR0f5zC3bf4DLukx7lDyOjZa3sMQNQL2HOQBvg7sevU6wgmS5g==}
+  /@nr1e/commons@0.0.2:
+    resolution: {integrity: sha512-HdjVJjF3toX90w1Au299F8CDM3XQk0mC8gcB6NzJ4JkFU4rlHQPwpUCwVnBfxluuaBnKzbjkCkybCgD+2E3tMA==}
     dev: false
 
   /@pkgr/utils@2.4.2:
