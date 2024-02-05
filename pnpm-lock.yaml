@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@nr1e/commons':
-    specifier: ^0.0.2-alpha.15
-    version: 0.0.2-alpha.15
+    specifier: ^0.0.3
+    version: 0.0.3
   axios:
     specifier: ^1.6.3
     version: 1.6.3
@@ -759,8 +759,10 @@ packages:
       fastq: 1.15.0
     dev: true
 
-  /@nr1e/commons@0.0.2-alpha.15:
-    resolution: {integrity: sha512-scIQKlIbwwDhHVPqF3OKCJlhQDA/MNge5vtnrR0f5zC3bf4DLukx7lDyOjZa3sMQNQL2HOQBvg7sevU6wgmS5g==}
+  /@nr1e/commons@0.0.3:
+    resolution: {integrity: sha512-zDhYNkEFG9/exsIQBLp8LFWobCZ+wn7vPE5l2w9knY9/eXtCmfmkVJZwS6Pqb8GuNcibMbHlBpF+AJmrHimLHQ==}
+    dependencies:
+      tslib: 2.6.2
     dev: false
 
   /@pkgr/utils@2.4.2:
@@ -3749,7 +3751,6 @@ packages:
 
   /tslib@2.6.2:
     resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
-    dev: true
 
   /tsutils@3.21.0(typescript@5.1.6):
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
